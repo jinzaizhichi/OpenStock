@@ -1,5 +1,13 @@
 import { transporter } from "@/lib/nodemailer";
 
+const escapeHtml = (value: string) =>
+    value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
 export const sendPasswordResetEmail = async (
     { email, name, resetUrl }: { email: string; name?: string | null; resetUrl: string }
 ) => {
@@ -9,16 +17,18 @@ export const sendPasswordResetEmail = async (
         }
 
         const firstName = name?.trim().split(' ')[0] || 'there';
+        const escapedFirstName = escapeHtml(firstName);
+        const escapedResetUrl = escapeHtml(encodeURI(resetUrl));
         const html = `
             <div style="background:#000;padding:32px;font-family:Arial,sans-serif;color:#fff;">
                 <div style="max-width:560px;margin:0 auto;border:1px solid #333;border-radius:12px;padding:32px;background:#111;">
                     <h1 style="margin:0 0 16px;font-size:28px;">Reset your password</h1>
-                    <p style="margin:0 0 16px;color:#d4d4d8;">Hi ${firstName},</p>
+                    <p style="margin:0 0 16px;color:#d4d4d8;">Hi ${escapedFirstName},</p>
                     <p style="margin:0 0 24px;color:#d4d4d8;line-height:1.6;">
                         We received a request to reset your Openstock password. Use the button below to choose a new one.
                     </p>
                     <a
-                        href="${resetUrl}"
+                        href="${escapedResetUrl}"
                         style="display:inline-block;background:#facc15;color:#111827;padding:12px 20px;border-radius:9999px;text-decoration:none;font-weight:700;"
                     >
                         Reset password
@@ -34,7 +44,7 @@ export const sendPasswordResetEmail = async (
             from: `"Openstock" <${process.env.NODEMAILER_EMAIL}>`,
             to: email,
             subject: 'Reset your Openstock password',
-            text: `Reset your password: ${resetUrl}`,
+            text: `Reset your password: ${encodeURI(resetUrl)}`,
             html,
         });
 

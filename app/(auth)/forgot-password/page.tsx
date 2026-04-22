@@ -26,16 +26,22 @@ const ForgotPasswordPage = () => {
     });
 
     const onSubmit = async (data: ForgotPasswordFormData) => {
-        const result = await requestPasswordResetEmail(data);
+        try {
+            const result = await requestPasswordResetEmail(data);
 
-        if (result.success) {
-            toast.success('If an account exists for that email, a reset link has been sent.');
-            return;
+            if (result.success) {
+                toast.success('If an account exists for that email, a reset link has been sent.');
+                return;
+            }
+
+            toast.error('Password reset unavailable', {
+                description: result.error ?? 'Unable to start password reset.',
+            });
+        } catch (error) {
+            toast.error('Password reset unavailable', {
+                description: error instanceof Error ? error.message : 'Unable to start password reset.',
+            });
         }
-
-        toast.error('Password reset unavailable', {
-            description: result.error ?? 'Unable to start password reset.',
-        });
     };
 
     return (

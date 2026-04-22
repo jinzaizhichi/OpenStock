@@ -64,7 +64,18 @@ export const requestPasswordResetEmail = async ({ email }: { email: string }) =>
     }
 
     try {
-        const baseUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+        const configuredBaseUrl = process.env.BETTER_AUTH_URL;
+        const baseUrl = configuredBaseUrl || (
+            process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : null
+        );
+
+        if (!baseUrl) {
+            return {
+                success: false,
+                error: 'BETTER_AUTH_URL must be configured before password reset emails can be sent.',
+            }
+        }
+
         await auth.api.requestPasswordReset({
             body: {
                 email,

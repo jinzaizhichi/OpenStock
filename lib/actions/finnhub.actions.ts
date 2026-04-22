@@ -50,7 +50,7 @@ export { fetchJSON };
 
 function getExchangeLabel(symbol: string, exchange?: string) {
     if (exchange?.trim()) {
-        return exchange;
+        return exchange.trim();
     }
 
     const parts = symbol.split('.');
@@ -60,11 +60,7 @@ function getExchangeLabel(symbol: string, exchange?: string) {
         return 'US';
     }
 
-    if (FINNHUB_EXCHANGE_SUFFIXES.has(suffix) || suffix.length >= 2) {
-        return suffix;
-    }
-
-    return 'US';
+    return FINNHUB_EXCHANGE_SUFFIXES.has(suffix) ? suffix : 'US';
 }
 
 export async function getQuote(symbol: string) {

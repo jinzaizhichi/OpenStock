@@ -46,7 +46,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
 
     useEffect(() => {
         debouncedSearch();
-    }, [searchTerm]);
+    }, [debouncedSearch, searchTerm]);
 
     const handleSelectStock = () => {
         setOpen(false);
@@ -87,7 +87,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
                                 {isSearchMode ? 'Search results' : 'Popular stocks'}
                                 {` `}({displayStocks?.length || 0})
                             </div>
-                            {displayStocks?.map((stock, i) => (
+                            {displayStocks?.map((stock) => (
                                 <li key={stock.symbol} className="search-item">
                                     <Link
                                         href={`/stocks/${stock.symbol}`}
@@ -100,7 +100,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
                                                 {stock.name}
                                             </div>
                                             <div className="text-sm text-gray-500">
-                                                {stock.symbol} | {stock.exchange } | {stock.type}
+                                                {[stock.symbol, stock.exchange, stock.type].filter(Boolean).join(' | ')}
                                             </div>
                                         </div>
 
